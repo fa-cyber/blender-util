@@ -4,10 +4,15 @@ import bpy
 
 
 NURBS_GUIDE_WEIGHT = 1
-NUM_SEGS = 5
-SEG_PACING = 10
+# How many parts of the curve
+NUM_SEGS = 15
+# How far each part of the curve will be apart
+SEG_PACING = 4
 
 assert NUM_SEGS >= 3
+
+vprint = lambda *_, **__: None
+vprint = print
 
 def make_path(collection, name, segments):
     path = bpy.data.curves.new("curve", "CURVE")
@@ -43,15 +48,15 @@ def get_curve_length(curve_obj):
 
 
 def calc_sec_offset(id, guide_obj):
-    print(f"{id} updated")
+    vprint(f"{id} updated")
     frames = guide_obj.data.path_duration
     length = get_curve_length(guide_obj)
-    print("(100/frames)", (100/frames))
-    print("frames", frames)
-    print("(100/length)", (100/length))
-    print("length", length)
-    print("pacing", (100/frames)*(100/length)*SEG_PACING)
-    return (100/frames)*(100/length)*SEG_PACING
+    vprint("(frames/100)", (frames/100))
+    vprint("frames", frames)
+    vprint("(100/length)", (100/length))
+    vprint("length", length)
+    vprint("pacing", (frames/100)*(100/length)*SEG_PACING)
+    return (frames/100)*(100/length)*SEG_PACING
 
 def main():
 
@@ -68,7 +73,7 @@ def main():
         point.co[1] = i*1/3*100
         point.co[-1] = 1
     
-    inter_path = make_path(collection, "InterPath", NUM_SEGS-1)
+    inter_path = make_path(collection, "AttachSplineIKToThisCurve", NUM_SEGS-1)
 
 
     hooks = tuple(make_hook_target(collection, guide_path, inter_path, i)
